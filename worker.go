@@ -314,7 +314,7 @@ func (w *Worker) Request(ctx context.Context, opts RequestOptions) (*ResponseDat
 		opts.Method = http.MethodGet
 	}
 
-	hdr := processHeaders(cloneHeader(opts.Headers), opts.URL)
+	executionID, hdr := processHeaders(cloneHeader(opts.Headers), opts.URL)
 	req, err := http.NewRequestWithContext(ctx, opts.Method, "http://deno/", opts.Body)
 	if err != nil {
 		return nil, err
@@ -325,7 +325,7 @@ func (w *Worker) Request(ctx context.Context, opts RequestOptions) (*ResponseDat
 	if err != nil {
 		return nil, err
 	}
-	rd := &ResponseData{StatusCode: resp.StatusCode, Header: resp.Header, Body: resp.Body, Trailers: resp.Trailer}
+	rd := &ResponseData{StatusCode: resp.StatusCode, Header: resp.Header, Body: resp.Body, Trailers: resp.Trailer, ExecutionID: executionID}
 	return rd, nil
 }
 

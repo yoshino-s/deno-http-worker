@@ -43,7 +43,7 @@ const server = Deno.serve(
     onListen: onListen,
     onError: onError,
   },
-  (originalReq: Request) => {
+  async (originalReq: Request) => {
     const headerUrl = originalReq.headers.get("X-Deno-Worker-URL");
     if (!headerUrl) {
       // This is just for the warming request, shouldn't be seen by clients.
@@ -75,7 +75,16 @@ const server = Deno.serve(
     req.headers.delete("X-Deno-Worker-Host");
     req.headers.delete("X-Deno-Worker-Connection");
 
-    return mod.default.fetch(req);
+    const executionId = req.headers.get("X-Deno-Execution-Id");
+
+    const res = await mod.default.fetch(req);
+
+    // Add execution ID header to response.
+    if (executionId) {
+      res.headers.set("X-Deno-Execution-Id", executionId);
+    }
+
+    return res;
   },
 );
 

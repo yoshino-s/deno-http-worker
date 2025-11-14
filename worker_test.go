@@ -70,7 +70,7 @@ func TestWebSocketEcho(t *testing.T) {
 	defer cancel()
 
 	wsURL := "ws://localhost/echo"
-	wsConn, resp, err := w.WebSocket(ctx, wsURL, nil)
+	_, wsConn, resp, err := w.WebSocket(ctx, wsURL, nil)
 	if err != nil {
 		t.Fatalf("websocket dial: %v (resp: %+v)", err, resp)
 	}

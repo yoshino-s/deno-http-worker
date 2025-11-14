@@ -18,10 +18,11 @@ type RequestOptions struct {
 // ResponseData mirrors important pieces of http.Response returned by the
 // worker. The caller is responsible for closing Body.
 type ResponseData struct {
-	StatusCode int
-	Header     http.Header
-	Body       io.ReadCloser
-	Trailers   http.Header
+	StatusCode  int
+	Header      http.Header
+	Body        io.ReadCloser
+	Trailers    http.Header
+	ExecutionID string
 }
 
 // OnExitListener is notified when the Deno process exits. It receives the
