@@ -306,7 +306,7 @@ func (w *Worker) Stderr() io.Reader { return w.stderrR }
 // The URL should be absolute (scheme + host + path) as expected by the
 // JavaScript handler. Headers are augmented with X-Deno-Worker-* metadata.
 // The ResponseData contains Body; the caller must Close it when finished.
-func (w *Worker) Request(ctx context.Context, opts RequestOptions) (*ResponseData, error) {
+func (w *Worker) Request(ctx context.Context, opts *RequestOptions) (*ResponseData, error) {
 	if w == nil || w.httpClient == nil {
 		return nil, fmt.Errorf("worker not initialized")
 	}

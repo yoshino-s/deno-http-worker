@@ -41,7 +41,7 @@ func TestJSONEcho(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := w.Request(ctx, RequestOptions{URL: "https://localhost/hello?isee=you", Method: "POST"})
+	resp, err := w.Request(ctx, &RequestOptions{URL: "https://localhost/hello?isee=you", Method: "POST"})
 	if err != nil {
 		t.Fatalf("request: %v", err)
 	}
@@ -104,7 +104,7 @@ func TestHonoEcho(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := w.Request(ctx, RequestOptions{URL: "https://localhost/echo", Body: strings.NewReader("hello"), Method: "POST"})
+	resp, err := w.Request(ctx, &RequestOptions{URL: "https://localhost/echo", Body: strings.NewReader("hello"), Method: "POST"})
 	if err != nil {
 		t.Fatalf("request: %v", err)
 	}
