@@ -98,3 +98,5 @@ Deno.addSignalListener("SIGINT", async () => {
   // unresolved promises to complete before exiting.
   await server.shutdown();
 });
+
+//# sourceURL=worker:///bootstrap.ts
