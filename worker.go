@@ -20,8 +20,6 @@ import (
 	"syscall"
 	"time"
 	"unicode/utf8"
-
-	"github.com/olebedev/emitter"
 )
 
 //go:embed bootstrap.ts
@@ -46,8 +44,6 @@ func (e *EarlyExitError) Error() string { return e.Msg }
 // NewFromImport to construct a Worker; remember to call Terminate or Shutdown
 // when you are done to release resources and remove the socket file.
 type Worker struct {
-	emitter *emitter.Emitter
-
 	socketPath string
 	cmd        *exec.Cmd
 	stdoutR    io.ReadCloser
@@ -173,7 +169,6 @@ func newWorker(source string, isImport bool, opts *Options) (*Worker, error) {
 	}
 
 	w := &Worker{
-		emitter:    &emitter.Emitter{},
 		socketPath: socketPath,
 		cmd:        cmd,
 		stdoutR:    stdout,
@@ -181,18 +176,14 @@ func newWorker(source string, isImport bool, opts *Options) (*Worker, error) {
 	}
 
 	// Capture output for diagnostics and optional printing
-	go w.pipe(stdout, &w.outBuf, func(line string) {
-		w.emitter.Emit("stdout", line)
-	})
-	go w.pipe(stderr, &w.errBuf, func(line string) {
-		w.emitter.Emit("stderr", line)
-	})
-
+	go w.pipe(stdout, &w.outBuf, opts.OnStdout)
+	go w.pipe(stderr, &w.errBuf, opts.OnStderr)
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
-	w.emitter.Emit("spawn", cmd.Process.Pid)
-
+	if opts.OnSpawn != nil {
+		opts.OnSpawn(cmd.Process.Pid)
+	}
 	// Exit watcher
 	go func() {
 		err := cmd.Wait()
@@ -250,7 +241,9 @@ func (w *Worker) pipe(r io.Reader, buf *bytes.Buffer, callback func(string)) {
 		line, err := br.ReadBytes('\n')
 		if len(line) > 0 {
 			buf.Write(line)
-			callback(string(line))
+			if callback != nil {
+				callback(string(line))
+			}
 		}
 		if errors.Is(err, io.EOF) {
 			return

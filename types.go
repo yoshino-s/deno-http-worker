@@ -52,4 +52,13 @@ type Options struct {
 
 	// Env overrides environment variables. If nil, inherits parent.
 	Env []string
+
+	// OnSpawn is invoked right after the process starts.
+	OnSpawn func(pid int)
+
+	// OnStdout is invoked for each line of stdout.
+	OnStdout func(line string)
+
+	// OnStderr is invoked for each line of stderr.
+	OnStderr func(line string)
 }
